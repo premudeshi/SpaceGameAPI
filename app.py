@@ -103,10 +103,17 @@ def create_new_user():  # put application's code here
 @app.route('/scores', methods=['GET', 'POST'])
 def get_all_scores():
     if request.method == 'POST':
-        top_scores = Score.query.order_by(Score.score.desc()).limit(20).all()
+        top_scores = Score.query.order_by(Score.score.desc()).all()
         return jsonify([{'user': score.user.username, 'score': score.score, 'date':score.timestamp} for score in top_scores])
     else:
         return render_template('scores.html', scores=Score.query.order_by(Score.score.desc()).all())
+
+@app.route('/scores/<int:count>')
+def get_numbered_scores(count):
+    top_scores = Score.query.order_by(Score.score.desc()).limit(count).all()
+    return jsonify(
+        [{'user': score.user.username, 'score': score.score, 'date': score.timestamp} for score in top_scores])
+
 
 @app.route('/scores/create', methods=['POST'])
 def upload_score():
